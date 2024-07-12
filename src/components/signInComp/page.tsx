@@ -14,8 +14,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { toast } from "@/components/ui/use-toast"
+import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/use-toast";
+import { Spinner } from "@/components/ui/spinner";
+import { useState } from "react"
+import axios from "axios"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 const FormSchema = z.object({
   email: z.string().email({
@@ -29,6 +34,8 @@ const FormSchema = z.object({
 })
 
 export function InputForm() {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -36,16 +43,31 @@ export function InputForm() {
       password:""
     },
   })
+  type FormData = z.infer<typeof FormSchema>;
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 mx-auto">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    })
+  async function onSubmit(data: FormData) {
+    setLoading(true);
+    try {
+      const response = await axios.post('/api/login',{
+        email : data.email,
+        password : data.password
+      })
+      localStorage.setItem('accessToken', response.data.accessToken);
+      localStorage.setItem('refreshToken', response.data.refreshToken);
+      console.log(response);
+      if(response.status === 200){
+        router.push('/dashboard');
+      }
+    } catch (error:any) {
+      console.log('err while submiting : ',error);
+      // toast({
+      //   variant: "destructive",
+      //   title: "Error",
+      //   description: error.response?.data?.message || "There was an error submitting your data."
+      // })
+    } finally{
+      setLoading(false);
+    }
   }
 
   return (
@@ -58,7 +80,7 @@ export function InputForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your mail here" {...field} />
+                <Input type="email" placeholder="Enter your mail address" {...field} />
               </FormControl>
               {/* <FormDescription>
                 This is your public display name.
@@ -74,15 +96,23 @@ export function InputForm() {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your password" {...field} />
+                <Input type="password" placeholder="Enter your password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
             
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit" disabled={loading} className="flex items-center justify-center">
+          {loading ? <Spinner /> : "Submit"}
+        </Button>
       </form>
+      <div className="text-center ">
+
+      <Link href={`/signup`} className="text-black">
+      Not have an account?
+      </Link>
+      </div>
     </Form>
   )
 }

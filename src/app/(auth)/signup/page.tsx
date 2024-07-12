@@ -2,9 +2,12 @@ import { InputForm } from "@/components/signUpComp/page"
 
 const page = () => {
   return (
-    <div>
+    <>
+       <div className="text-2xl text-black tracking-wide text-center mt-5">
+        SignUp
+      </div>
         <InputForm/>
-    </div>
+    </>
   )
 }
 
