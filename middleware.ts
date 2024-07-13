@@ -23,5 +23,5 @@ export function middleware(req: NextRequest) {
 
 // Specify the paths where the middleware should be applied
 export const config = {
-  matcher: ['/dashboard/:path*'],
+  matcher: ['/dashboard/:path*','/viewall'],
 };
