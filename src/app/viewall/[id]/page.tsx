@@ -12,7 +12,6 @@ type Lyric = {
 
 const LyricPage = () => {
   const { id } = useParams();
-  console.log("this is id --: ", id);
   const [lyric, setLyric] = useState<Lyric | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,6 +20,8 @@ const LyricPage = () => {
     if (!id) return;
 
     const fetchLyric = async () => {
+      
+
       try {
         const response = await axios.get(`/api/lyrics/${id}`);
         setLyric(response.data);

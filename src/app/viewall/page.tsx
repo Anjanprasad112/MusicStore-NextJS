@@ -17,8 +17,19 @@ const Page = () => {
 
   useEffect(() => {
     const fetchLyrics = async () => {
+      const token = localStorage.getItem('accessToken');
+      console.log("this is token : ",token); // Assuming the token is stored in localStorage
+      if (!token) {
+        setError('User not authenticated');
+        setLoading(false);
+        return;
+      }
       try {
-        const response = await axios.get('/api/lyrics');
+        const response = await axios.get('/api/lyrics', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         setLyrics(response.data);
         setLoading(false);
       } catch (err: any) {

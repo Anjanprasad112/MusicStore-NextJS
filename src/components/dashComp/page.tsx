@@ -15,6 +15,8 @@ const Dash: React.FC<Props> = ({ user }) => {
   const [title, setTitle] = useState("");
   const [lyrics, setLyrics] = useState("");
   const [loading, setLoading] = useState(false);
+  const mailUsr = user.email;
+
 
   useEffect(() => {
     const getGreeting = async () => {
@@ -31,9 +33,10 @@ const Dash: React.FC<Props> = ({ user }) => {
         setGreeting("Good Night");
       }
     };
-
+    
     getGreeting();
   }, []);
+  console.log("usr email : ",user.email);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,6 +45,7 @@ const Dash: React.FC<Props> = ({ user }) => {
       const response = await axios.post("/api/lyrics", {
         title: title,
         lyrics: lyrics,
+        userEmail: mailUsr
       });
       console.log("Response:", response.data);
       toast.success("Successfully Created");
